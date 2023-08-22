@@ -21,6 +21,8 @@ elif sys.argv[1] == 'binancefuturescoin':
 else:
     raise ValueError('unsupported exchange.')
 
+if not os.path.exists(sys.argv[3]):
+    os.makedirs(sys.argv[3])
 
 def writer_proc(queue, output):
     while True:
@@ -29,7 +31,7 @@ def writer_proc(queue, output):
             break
         symbol, timestamp, message = data
         date = datetime.datetime.fromtimestamp(timestamp).strftime('%Y%m%d')
-        with open(os.path.join(output, '%s_%s.dat' % (symbol, date)), 'a') as f:
+        with open(os.path.join(output, '%s_%s_%s.dat' % (symbol, date, sys.argv[1])), 'a') as f:
             f.write(str(int(timestamp * 1000000)))
             f.write(' ')
             f.write(message)
