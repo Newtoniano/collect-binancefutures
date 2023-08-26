@@ -59,7 +59,7 @@ async def main():
         target=writer_proc,
         args=(
             queue,
-            sys.argv[3],
+            output_path,
         ),
     )
     writer_p.start()
