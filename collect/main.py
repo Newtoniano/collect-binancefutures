@@ -41,7 +41,7 @@ def writer_proc(queue, output):
         symbol, timestamp, message = data
         date = datetime.datetime.fromtimestamp(timestamp).strftime("%Y%m%d")
         with open(
-            os.path.join(output, "%s_%s_%s.dat" % (symbol, date, sys.argv[1])), "a"
+            os.path.join(output, "%s_%s_%s.dat" % (symbol, date, exchange)), "a"
         ) as f:
             f.write(str(int(timestamp * 1000000)))
             f.write(" ")
