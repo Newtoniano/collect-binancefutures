@@ -12,17 +12,26 @@ from binance import Binance
 
 queue = Queue()
 
-if sys.argv[1] == 'binancefutures':
-    stream = BinanceFutures(queue, sys.argv[2].split(','))
-elif sys.argv[1] == 'binance':
-    stream = Binance(queue, sys.argv[2].split(','))
-elif sys.argv[1] == 'binancefuturescoin':
-    stream = BinanceFuturesCoin(queue, sys.argv[2].split(','))
-else:
-    raise ValueError('unsupported exchange.')
+exchange = os.environ.get("EXCHANGE") if os.environ.get("EXCHANGE") else sys.argv[1]
+symbols = os.environ.get("SYMBOLS") if os.environ.get("SYMBOLS") else sys.argv[2]
+output_path = (
+    os.environ.get("OUTPUT_PATH") if os.environ.get("OUTPUT_PATH") else sys.argv[3]
+)
+if not exchange or not symbols or not output_path:
+    raise ValueError("missing arguments.")
 
-if not os.path.exists(sys.argv[3]):
-    os.makedirs(sys.argv[3])
+if exchange == "binancefutures" == "binancefutures":
+    stream = BinanceFutures(queue, symbols.split(","))
+elif exchange == "binance":
+    stream = Binance(queue, symbols.split(","))
+elif exchange == "binancefuturescoin":
+    stream = BinanceFuturesCoin(queue, symbols.split(","))
+else:
+    raise ValueError("unsupported exchange.")
+
+if not os.path.exists(output_path):
+    os.makedirs(output_path)
+
 
 def writer_proc(queue, output):
     while True:
@@ -30,12 +39,14 @@ def writer_proc(queue, output):
         if data is None:
             break
         symbol, timestamp, message = data
-        date = datetime.datetime.fromtimestamp(timestamp).strftime('%Y%m%d')
-        with open(os.path.join(output, '%s_%s_%s.dat' % (symbol, date, sys.argv[1])), 'a') as f:
+        date = datetime.datetime.fromtimestamp(timestamp).strftime("%Y%m%d")
+        with open(
+            os.path.join(output, "%s_%s_%s.dat" % (symbol, date, sys.argv[1])), "a"
+        ) as f:
             f.write(str(int(timestamp * 1000000)))
-            f.write(' ')
+            f.write(" ")
             f.write(message)
-            f.write('\n')
+            f.write("\n")
 
 
 def shutdown():
@@ -44,7 +55,13 @@ def shutdown():
 
 async def main():
     logging.basicConfig(level=logging.DEBUG)
-    writer_p = Process(target=writer_proc, args=(queue, sys.argv[3],))
+    writer_p = Process(
+        target=writer_proc,
+        args=(
+            queue,
+            sys.argv[3],
+        ),
+    )
     writer_p.start()
     while not stream.closed:
         await stream.connect()
@@ -53,7 +70,7 @@ async def main():
     writer_p.join()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.add_signal_handler(signal.SIGTERM, shutdown)
     loop.add_signal_handler(signal.SIGINT, shutdown)
