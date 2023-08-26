@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  collect-binancefutures:
+    environment:
+      - EXCHANGE=binancefutures
+      - OUTPUT_PATH=raw_data
+      - SYMBOLS=btcusdt,ethusdt
+    volumes:
+      - '/home/ec2-user/collect-binancefutures/raw_data:/raw_data'
+    restart: always
+    image: 'collect-binancefutures:mia'
