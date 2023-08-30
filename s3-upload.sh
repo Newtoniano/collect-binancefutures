@@ -26,9 +26,9 @@ for file_path in $folder_path/*; do
             sudo gzip -9 "$file_path"
 
             # Upload the compressed file to S3
-            if aws s3 cp "${file_path}.gz" "s3://$s3_bucket_name/"; then
+            if aws s3 cp "${file_path}.gz" "s3://${s3_bucket_name}/"; then
                 # Successful upload, now confirm and then delete the file from the local EBS volume
-                if aws s3 ls "s3://$s3_bucket_name/${file_name}.gz"; then
+                if aws s3 ls "s3://${s3_bucket_name}/${file_name}.gz"; then
                     sudo rm "${file_path}.gz"
                     echo "Uploaded and deleted: $file_name"
                 else
