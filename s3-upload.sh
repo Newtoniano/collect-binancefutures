@@ -28,15 +28,15 @@ for file_path in $folder_path/*; do
             # Upload the compressed file to S3
             if aws s3 cp "${file_path}.gz" "s3://${s3_bucket_name}/"; then
                 # Successful upload, now confirm and then delete the file from the local EBS volume
-                if aws s3 ls "s3://${s3_bucket_name}/${file_name}.gz"; then
+                if aws s3 ls "s3://${s3_bucket_name}/${file_path}.gz"; then
                     sudo rm "${file_path}.gz"
-                    echo "Uploaded and deleted: $file_name"
+                    echo "Uploaded and deleted: $file_path"
                 else
-                    echo "Upload confirmation failed for: $file_name"
+                    echo "Upload confirmation failed for: $file_path"
                 fi
             else
                 # Upload failed, leave the file on the local EBS volume
-                echo "Upload failed for: $file_name"
+                echo "Upload failed for: $file_path"
             fi
         fi
     fi
