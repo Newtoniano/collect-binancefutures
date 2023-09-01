@@ -16,7 +16,7 @@ for file_path in $folder_path/*; do
     if [ -f "$file_path" ]; then
         # Extract the file's modification date from the filename (assuming the format is consistent)
         file_date=$(basename "$file_path" | cut -d'_' -f2 | cut -d'.' -f1)
-
+        file_name=$(basename "$file_path")
         # Compare the file's date with today's date
         if [ "$file_date" -lt "$today_date" ]; then
             # Print a message indicating which file is being processed
@@ -28,7 +28,7 @@ for file_path in $folder_path/*; do
             # Upload the compressed file to S3
             if aws s3 cp "${file_path}.gz" "s3://${s3_bucket_name}/"; then
                 # Successful upload, now confirm and then delete the file from the local EBS volume
-                if aws s3 ls "s3://${s3_bucket_name}/${file_path}.gz"; then
+                if aws s3 ls "s3://${s3_bucket_name}/${file_name}.gz"; then
                     sudo rm "${file_path}.gz"
                     echo "Uploaded and deleted: $file_path"
                 else
