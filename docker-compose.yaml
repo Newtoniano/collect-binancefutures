@@ -1,13 +1,37 @@
 version: '3.3'
 services:
-  collect-binancefutures:
+  cryptostore_binance_tcp:
+    container_name: cryptostore_binance_tcp
     environment:
-      - EXCHANGE=binance
-      - OUTPUT_PATH=raw_data
-      - SYMBOLS=btcusdt,btctusd
+      - EXCHANGE=BINANCE
+      - CHANNELS=trades,l2_book
+      - SYMBOLS=BTC-USDT,BTC-TUSD
+      - BACKEND=TCP
+      - HOST=tcp://127.0.0.1
+      - SAVE_RAW=True
+    image: 'cryptostore:latest'
     volumes:
-      - '/home/ec2-user/exchange_data/raw_data:/raw_data'
+      - /home/ec2-user/binance_raw:/raw_data
     restart: always
-    image: 'collect-binancefutures:mia'
-# docker run -e EXCHANGE='binancefutures' -e OUTPUT_PATH='testdocker' -e SYMBOLS='btcusdt,ethusdt' -v /home/ec2-user/collect-binancefutures/testdocker:/testdocker --restart-always ^Cllect-binancefutures:
-# mia
+  # redis-stack:
+  #   container_name: redis-stack
+  #   image: 'redis/redis-stack:latest'
+  #   ports:
+  #     - 6379:6379
+  #     - 9000:8001
+  #   volumes:
+  #     - /home/ec2-user/redis-stack/data:/data
+  #   restart: always
+  portainer:
+    container_name: portainer
+    image: 'portainer/portainer-ce:latest'
+    ports:
+      - 8000:8000
+      - 9443:9443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/ec2-user/portainer:/data
+    restart: always
+networks:
+  default:
+    name: cryptostore
