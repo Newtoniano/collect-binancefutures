@@ -1,0 +1,14 @@
+# This timer unit is for testing
+#
+
+[Unit]
+Description=Run the s3 raw exchange files upload script daily at 1 AM
+Requires=s3-upload.service
+
+[Timer]
+Unit=s3-upload.service
+OnCalendar=*-*-* 01:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,12 @@
+#
+ 
+[Unit]
+Description=Compresses and uploads raw exchange data files to a s3 bucket
+Wants=s3-upload.timer
+
+[Service]
+Type=oneshot
+ExecStart=/home/ec2-user/exchange_data/s3-upload.sh
+
+[Install]
+WantedBy=multi-user.target
